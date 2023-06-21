@@ -7,8 +7,10 @@ import categorieRoute from './routes/categories'
 import productBrandRoute from './routes/productBrands'
 import productRoute from './routes/products'
 import providerRoute from './routes/providers'
+import connectDb from './database/config'
 
 dotenv.config()
+void connectDb()
 
 const app: Express = express()
 
@@ -18,12 +20,7 @@ app.use(cors())
 app.use(express.urlencoded({ extended: true }))
 // app.use(express.static(__dirname + '/public'))
 
-app.get('/', (_req, res) => {
-  res.send('Bienvenido!!!!')
-})
-
 const PATH = '/api/'
-
 app.use(`${PATH}car-brands`, carBrandRoute)
 app.use(`${PATH}categories`, categorieRoute)
 app.use(`${PATH}product-brands`, productBrandRoute)
