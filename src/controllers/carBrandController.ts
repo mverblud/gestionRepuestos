@@ -1,25 +1,26 @@
 import { Request, Response } from "express";
 import mongoose from "mongoose";
 
-import CategoryModel from "../models/categoryModel";
-import { ICategory } from "../interfaces/category.interface";
+import carBrandModel from "../models/carBrandModel";
+import { ICarBrand } from "../interfaces/carBrand.interface";
 import {
-  createCategorySchema,
-  updateCategorySchema,
-} from "../schema/categorySchema";
+  createCarBrandSchema,
+  updateCarBrandSchema,
+} from "../schema/carBrandSchema";
 import cloudinary from "../config/cloudinaryConfig";
 import deleteUploadsFolder from "../helpers/deleteUploadsFolder";
 
-const folderCategories = "ov/categories";
+const folderCarBrands = "ov/carBrands";
 
-const getCategories = async (req: Request, res: Response): Promise<void> => {
+const getCarBrands = async (req: Request, res: Response): Promise<void> => {
   try {
     const { limit = 100, offset = 0 } = req.query;
     const query = { status: true };
 
-    const [total, categories] = await Promise.all([
-      CategoryModel.countDocuments(query),
-      CategoryModel.find(query)
+    const [total, carBrands] = await Promise.all([
+      carBrandModel.countDocuments(query),
+      carBrandModel
+        .find(query)
         .skip(Number(offset))
         .limit(Number(limit))
         .sort({ name: 1 }),
@@ -29,43 +30,43 @@ const getCategories = async (req: Request, res: Response): Promise<void> => {
       total,
       limit: Number(limit),
       offset: Number(offset),
-      categories,
+      carBrands,
     });
   } catch (error) {
-    console.error("No se pudo obtener las categorias:", error);
-    res.status(400).json({ msg: "No se pudo obtener las categorias" });
+    console.error("No se pudo obtener las carBrands:", error);
+    res.status(400).json({ msg: "No se pudo obtener las carBrands" });
   }
 };
 
-const getCategory = async (req: Request, res: Response) => {
+const getCarBrand = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
-    let categories: ICategory[];
+    let carBrands: ICarBrand[];
     if (mongoose.isValidObjectId(id)) {
       // Si el parámetro es un ID válido, busca la categoría por ID
-      const category = await CategoryModel.findById(id);
-      categories = category ? [category] : [];
+      const carBrand = await carBrandModel.findById(id);
+      carBrands = carBrand ? [carBrand] : [];
     } else {
       // Si el parámetro no es un ID válido, busca la categoría por letras de búsqueda
-      categories = await CategoryModel.find({
+      carBrands = await carBrandModel.find({
         name: { $regex: id, $options: "i" },
       });
     }
     // Si no se encontraron categorías, devuelve un mensaje indicando que no se encontraron resultados
-    if (categories.length === 0) {
-      return res.status(404).json({ message: "No se encontraron categorías." });
+    if (carBrands.length === 0) {
+      return res.status(404).json({ message: "No se encontraron carBrands." });
     }
     // Si se encontraron categorías, envíalas como respuesta
-    return res.json(categories);
+    return res.json(carBrands);
   } catch (error) {
-    console.error("No se pudo obtener la categoria:", error);
-    return res.status(400).json({ message: "No se pudo obtener la categoria" });
+    console.error("No se pudo obtener la carBrands:", error);
+    return res.status(400).json({ message: "No se pudo obtener la carBrands" });
   }
 };
 
-const createCategory = async (req: Request, res: Response) => {
+const createCarBrand = async (req: Request, res: Response) => {
   try {
-    const { error, value } = createCategorySchema.validate(req.body, {
+    const { error, value } = createCarBrandSchema.validate(req.body, {
       allowUnknown: true,
     });
     const { name, enabled } = value;
@@ -78,11 +79,11 @@ const createCategory = async (req: Request, res: Response) => {
 
     //  Verifico si no existe la marca
     const nameUpperCase = name.toUpperCase();
-    const existingCategory = await CategoryModel.findOne({
+    const existingCarBrand = await carBrandModel.findOne({
       name: nameUpperCase,
     });
-    if (existingCategory) {
-      return res.status(409).json({ message: "La categoría ya existe" });
+    if (existingCarBrand) {
+      return res.status(409).json({ message: "La carBrand ya existe" });
     }
 
     let imageUrl: string | undefined;
@@ -92,7 +93,7 @@ const createCategory = async (req: Request, res: Response) => {
       // Sube la imagen a Cloudinary
       const nameToUpperCase: string = name.toUpperCase();
       const result = await cloudinary.uploader.upload(req.file.path, {
-        folder: folderCategories,
+        folder: folderCarBrands,
         public_id: nameToUpperCase,
       });
       imageUrl = result.secure_url;
@@ -102,24 +103,24 @@ const createCategory = async (req: Request, res: Response) => {
     }
 
     // Crear la nueva categoría
-    const newCategory: ICategory = {
+    const newCarBrand: ICarBrand = {
       name,
       enabled: enabled || true,
       image: imageUrl,
     };
 
-    await CategoryModel.create(newCategory);
-    return res.status(201).json({ category: newCategory });
+    await carBrandModel.create(newCarBrand);
+    return res.status(201).json({ carBrand: newCarBrand });
   } catch (error) {
     console.error("Error al crear la categoría:", error);
-    return res.status(400).json({ message: "No se pudo crear la categoria" });
+    return res.status(400).json({ message: "No se pudo crear la carBrand" });
   }
 };
 
-const updateCategory = async (req: Request, res: Response) => {
+const updateCarBrand = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { error, value } = updateCategorySchema.validate(req.body, {
+    const { error, value } = updateCarBrandSchema.validate(req.body, {
       allowUnknown: true,
     });
 
@@ -130,64 +131,64 @@ const updateCategory = async (req: Request, res: Response) => {
     }
 
     // Obtiene la categoría existente por ID
-    const existingCategory: ICategory | null = await CategoryModel.findById(id);
+    const existingCarBrand: ICarBrand | null = await carBrandModel.findById(id);
 
-    if (!existingCategory) {
-      return res.status(409).json({ message: "La categoría No existe" });
+    if (!existingCarBrand) {
+      return res.status(409).json({ message: "La carBrand No existe" });
     }
 
     // Verifica si se proporcionó un nuevo nombre de categoría
     if (req.body.name) {
-      if (existingCategory && existingCategory.image) {
+      if (existingCarBrand && existingCarBrand.image) {
         // Elimina la imagen antigua de Cloudinary
-        await cloudinary.uploader.destroy(
-          `${folderCategories}/${existingCategory.name}`
+        cloudinary.uploader.destroy(
+          `${folderCarBrands}/${existingCarBrand.name}`
         );
       }
     }
 
     // Verifica si se proporcionó una nueva imagen de categoría
     if (req.file) {
+      console.log("uploader", folderCarBrands, req.body.name);
       // Sube la nueva imagen a Cloudinary utilizando el nombre de la categoría como public_id
-      const result = await cloudinary.uploader.upload(req.file.path, {
-        folder: folderCategories,
+      const { secure_url } = await cloudinary.uploader.upload(req.file.path, {
+        folder: folderCarBrands,
         public_id: req.body.name,
       });
-
-      value.image = result.secure_url;
+      value.image = secure_url;
 
       // Elimina el contenido de la carpeta 'uploads' después de subir la nueva imagen a Cloudinary
       deleteUploadsFolder();
     }
 
-    const updatedCategory: ICategory | null =
-      await CategoryModel.findByIdAndUpdate(id, { $set: value }, { new: true });
-    return res.status(200).json(updatedCategory);
+    const updatedCarBrand: ICarBrand | null =
+      await carBrandModel.findByIdAndUpdate(id, { $set: value }, { new: true });
+    return res.status(200).json(updatedCarBrand);
   } catch (error) {
-    console.error("Error al actualizar la categoría:", error);
-    return res.status(400).json({ msg: "No se pudo actualizar la categoria" });
+    console.error("Error al actualizar la carBrand:", error);
+    return res.status(400).json({ msg: "No se pudo actualizar la carBrand" });
   }
 };
 
-const deleteCategory = async (req: Request, res: Response) => {
+const deleteCarBrand = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const category = await CategoryModel.findByIdAndUpdate(id, {
+    const category = await carBrandModel.findByIdAndUpdate(id, {
       status: false,
     });
     res.json({ category });
   } catch (error) {
-    console.error("Error al eliminar la categoría:", error);
+    console.error("Error al eliminar la carBrand:", error);
     res.status(400).json({
-      msg: "No se pudo borrar la categoria",
+      msg: "No se pudo borrar la carBrand",
     });
   }
 };
 
 export {
-  getCategories,
-  getCategory,
-  createCategory,
-  updateCategory,
-  deleteCategory,
+  getCarBrand,
+  getCarBrands,
+  createCarBrand,
+  updateCarBrand,
+  deleteCarBrand,
 };

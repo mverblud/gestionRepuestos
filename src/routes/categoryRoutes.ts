@@ -8,8 +8,8 @@ import {
   updateCategory,
 } from "../controllers/categoryController";
 import validateFields from "../middlewares/validateFields";
-import existsCategory from "../helpers/db-validators";
 import upload from "../config/uploadConfig";
+import { existsCategory } from "../helpers/db-validators";
 
 const router = express.Router();
 

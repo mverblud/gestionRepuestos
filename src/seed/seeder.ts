@@ -1,6 +1,8 @@
 import dotenv from "dotenv";
 import connectDb from "../database/config";
 import Category from "../models/categoryModel";
+import carBrandModel from "../models/carBrandModel";
+import carBrands from "./carBrands";
 import categories from "./categories";
 //import cloudinary from "../config/cloudinaryConfig";
 
@@ -10,7 +12,10 @@ const importData = async (): Promise<void> => {
   try {
     // conexion a la BD
     await connectDb();
-    await Promise.all([Category.insertMany(categories)]);
+    await Promise.all([
+      Category.insertMany(categories),
+      carBrandModel.insertMany(carBrands),
+    ]);
     console.log("Data imported successfully");
     process.exit(1);
   } catch (error: unknown) {
@@ -23,7 +28,7 @@ const deleteData = async (): Promise<void> => {
   try {
     // conexion a la BD
     await connectDb();
-    await Promise.all([Category.deleteMany()]);
+    await Promise.all([Category.deleteMany(), carBrandModel.deleteMany()]);
     console.log("Data deleted successfully");
 
     //const response = await cloudinary.api.delete_all_resources();
