@@ -1,5 +1,6 @@
 import carBrandModel from "../models/carBrandModel";
 import categoryModel from "../models/categoryModel";
+import productBrandModel from "../models/productBrandModel";
 
 const existsCategory = async (id: string): Promise<void> => {
   const categoryExists = await categoryModel.findById(id);
@@ -15,4 +16,11 @@ const existsCarBrand = async (id: string): Promise<void> => {
   }
 };
 
-export { existsCategory, existsCarBrand };
+const existsProductBrand = async (id: string): Promise<void> => {
+  const productBrandExists = await productBrandModel.findById(id);
+  if (!productBrandExists) {
+    throw new Error(`The id does not exist: ${id}`);
+  }
+};
+
+export { existsCategory, existsCarBrand, existsProductBrand };

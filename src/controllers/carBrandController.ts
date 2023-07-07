@@ -149,7 +149,6 @@ const updateCarBrand = async (req: Request, res: Response) => {
 
     // Verifica si se proporcionó una nueva imagen de categoría
     if (req.file) {
-      console.log("uploader", folderCarBrands, req.body.name);
       // Sube la nueva imagen a Cloudinary utilizando el nombre de la categoría como public_id
       const { secure_url } = await cloudinary.uploader.upload(req.file.path, {
         folder: folderCarBrands,

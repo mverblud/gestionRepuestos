@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "db:importar": "node dist/seed/seeder.js -i",
-    "db:eliminar": "node dist/seed/seeder.js -e"
+    "db:eliminar": "node dist/seed/seeder.js -e",
+    "db:cloudinary": "node dist/seed/seeder.js -c"
   },
   "keywords": [],
   "author": "",
