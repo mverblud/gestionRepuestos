@@ -1,6 +1,6 @@
 import { IProductBrand } from "../interfaces/productBrand.interface";
 
-const productBrand: IProductBrand[] = [
+const productBrands: IProductBrand[] = [
   {
     name: "ADON",
     status: true,
@@ -213,4 +213,4 @@ const productBrand: IProductBrand[] = [
   },
 ];
 
-export default productBrand;
+export default productBrands;

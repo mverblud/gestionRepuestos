@@ -3,11 +3,11 @@ import cors from "cors";
 import dotenv from "dotenv";
 import morgan from "morgan";
 
-import carBrandRoute from "./routes/carBrands";
+import carBrandRoute from "./routes/carBrandsRoutes";
 import categorieRoute from "./routes/categoryRoutes";
-import productBrandRoute from "./routes/productBrands";
-import productRoute from "./routes/products";
-import providerRoute from "./routes/providers";
+import productBrandRoute from "./routes/productBrandsRoutes";
+import productRoute from "./routes/productsRoutes";
+import providerRoute from "./routes/providersRoutes";
 import connectDb from "./database/config";
 
 void (async () => {

@@ -7,6 +7,8 @@ import categories from "./categories";
 import productBrandModel from "../models/productBrandModel";
 import productBrand from "./productBrands";
 import cloudinary from "../config/cloudinaryConfig";
+import providerModel from "../models/providerModel";
+import providers from "./providres";
 
 dotenv.config();
 
@@ -18,6 +20,7 @@ const importData = async (): Promise<void> => {
       categoryModel.insertMany(categories),
       carBrandModel.insertMany(carBrands),
       productBrandModel.insertMany(productBrand),
+      providerModel.insertMany(providers),
     ]);
     console.log("Data imported successfully");
     process.exit(1);
@@ -35,6 +38,7 @@ const deleteData = async (): Promise<void> => {
       categoryModel.deleteMany(),
       carBrandModel.deleteMany(),
       productBrandModel.deleteMany(),
+      providerModel.deleteMany(),
     ]);
     console.log("Data deleted successfully");
     process.exit(1);
