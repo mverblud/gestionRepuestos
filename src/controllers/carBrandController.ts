@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import mongoose from "mongoose";
+import { isValidObjectId } from "mongoose";
 
 import carBrandModel from "../models/carBrandModel";
 import { ICarBrand } from "../interfaces/carBrand.interface";
@@ -9,6 +9,7 @@ import {
 } from "../schema/carBrandSchema";
 import cloudinary from "../config/cloudinaryConfig";
 import deleteUploadsFolder from "../helpers/deleteUploadsFolder";
+import { LogLevel, logger } from "../helpers/logger";
 
 const folderCarBrands = "ov/carBrands";
 
@@ -33,8 +34,8 @@ const getCarBrands = async (req: Request, res: Response): Promise<void> => {
       carBrands,
     });
   } catch (error) {
-    console.error("No se pudo obtener las carBrands:", error);
-    res.status(400).json({ msg: "No se pudo obtener las carBrands" });
+    logger("getCarBrands", error, LogLevel.ERROR);
+    res.status(500).json({ error: "Could not get Carbrands." });
   }
 };
 
@@ -42,25 +43,27 @@ const getCarBrand = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
     let carBrands: ICarBrand[];
-    if (mongoose.isValidObjectId(id)) {
+    if (isValidObjectId(id)) {
       // Si el parámetro es un ID válido, busca la categoría por ID
       const carBrand = await carBrandModel.findById(id);
       carBrands = carBrand ? [carBrand] : [];
     } else {
       // Si el parámetro no es un ID válido, busca la categoría por letras de búsqueda
-      carBrands = await carBrandModel.find({
-        name: { $regex: id, $options: "i" },
-      });
+      carBrands = await carBrandModel
+        .find({
+          name: { $regex: id, $options: "i" },
+        })
+        .sort({ name: 1 });
     }
     // Si no se encontraron categorías, devuelve un mensaje indicando que no se encontraron resultados
     if (carBrands.length === 0) {
-      return res.status(404).json({ message: "No se encontraron carBrands." });
+      return res.status(404).json({ message: "Could not get carBrands." });
     }
     // Si se encontraron categorías, envíalas como respuesta
     return res.json(carBrands);
   } catch (error) {
-    console.error("No se pudo obtener la carBrands:", error);
-    return res.status(400).json({ message: "No se pudo obtener la carBrands" });
+    logger("getCarBrand", error, LogLevel.ERROR);
+    return res.status(500).json({ error: "Could not get carBrands." });
   }
 };
 
@@ -72,9 +75,7 @@ const createCarBrand = async (req: Request, res: Response) => {
     const { name, enabled } = value;
 
     if (error) {
-      return res
-        .status(400)
-        .json({ message: "El cuerpo de la solicitud no es válido", error });
+      return res.status(400).json({ message: "Invalid request body", error });
     }
 
     //  Verifico si no existe la marca
@@ -83,7 +84,7 @@ const createCarBrand = async (req: Request, res: Response) => {
       name: nameUpperCase,
     });
     if (existingCarBrand) {
-      return res.status(409).json({ message: "La carBrand ya existe" });
+      return res.status(409).json({ message: "Carbrand already exists." });
     }
 
     let imageUrl: string | undefined;
@@ -112,8 +113,8 @@ const createCarBrand = async (req: Request, res: Response) => {
     await carBrandModel.create(newCarBrand);
     return res.status(201).json({ carBrand: newCarBrand });
   } catch (error) {
-    console.error("Error al crear la categoría:", error);
-    return res.status(400).json({ message: "No se pudo crear la carBrand" });
+    logger("createCarBrand", error, LogLevel.ERROR);
+    return res.status(500).json({ error: "Failed to create the carBrand." });
   }
 };
 
@@ -125,16 +126,13 @@ const updateCarBrand = async (req: Request, res: Response) => {
     });
 
     if (error) {
-      return res
-        .status(400)
-        .json({ message: "El cuerpo de la solicitud no es válido", error });
+      return res.status(400).json({ message: "Invalid request body", error });
     }
 
     // Obtiene la categoría existente por ID
     const existingCarBrand: ICarBrand | null = await carBrandModel.findById(id);
-
     if (!existingCarBrand) {
-      return res.status(409).json({ message: "La carBrand No existe" });
+      return res.status(404).json({ message: "Product not found" });
     }
 
     // Verifica si se proporcionó un nuevo nombre de categoría
@@ -164,8 +162,8 @@ const updateCarBrand = async (req: Request, res: Response) => {
       await carBrandModel.findByIdAndUpdate(id, { $set: value }, { new: true });
     return res.status(200).json(updatedCarBrand);
   } catch (error) {
-    console.error("Error al actualizar la carBrand:", error);
-    return res.status(400).json({ msg: "No se pudo actualizar la carBrand" });
+    logger("updateCarBrand", error, LogLevel.ERROR);
+    return res.status(500).json({ error: "Error updating the carBrand." });
   }
 };
 
@@ -177,9 +175,9 @@ const deleteCarBrand = async (req: Request, res: Response) => {
     });
     res.json({ category });
   } catch (error) {
-    console.error("Error al eliminar la carBrand:", error);
-    res.status(400).json({
-      msg: "No se pudo borrar la carBrand",
+    logger("deleteCarBrand", error, LogLevel.ERROR);
+    res.status(500).json({
+      error: "Error deleting the carBrand.",
     });
   }
 };

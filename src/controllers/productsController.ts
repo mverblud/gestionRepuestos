@@ -12,6 +12,7 @@ import productBrandModel from "../models/productBrandModel";
 import carBrandModel from "../models/carBrandModel";
 import categoryModel from "../models/categoryModel";
 import providerModel from "../models/providerModel";
+import { LogLevel, logger } from "../helpers/logger";
 
 const folderProducts = "ov/products";
 
@@ -40,7 +41,7 @@ const getProducts = async (req: Request, res: Response): Promise<void> => {
       products,
     });
   } catch (error) {
-    console.error("Could not get Products: ", error);
+    logger("getProducts", error, LogLevel.ERROR);
     res.status(500).json({ error: "Could not get Products" });
   }
 };
@@ -77,7 +78,7 @@ const getProduct = async (req: Request, res: Response) => {
     // Si se encontraron categorías, envíalas como respuesta
     return res.json(products);
   } catch (error) {
-    console.error("Could not get Products: ", error);
+    logger("getProduct", error, LogLevel.ERROR);
     return res.status(500).json({ error: "Could not get Products." });
   }
 };
@@ -185,7 +186,7 @@ const createProduct = async (req: Request, res: Response) => {
     const product = await productModel.create(newProduct);
     return res.status(201).json({ product });
   } catch (error) {
-    console.error("Error creating the product:", error);
+    logger("createProduct", error, LogLevel.ERROR);
     return res.status(500).json({ error: "Failed to create the product" });
   }
 };
@@ -288,7 +289,7 @@ const updateProduct = async (
     );
     return res.status(200).json(updatedProduct);
   } catch (error) {
-    console.error("Error updating the product: ", error);
+    logger("updateProduct", error, LogLevel.ERROR);
     return res.status(500).json({ error: "Error updating the product" });
   }
 };
@@ -301,7 +302,7 @@ const deleteProduct = async (req: Request, res: Response) => {
     });
     res.json({ product });
   } catch (error) {
-    console.error("Error deleting the product: ", error);
+    logger("deleteProduct", error, LogLevel.ERROR);
     res.status(500).json({ error: "Error deleting the product" });
   }
 };

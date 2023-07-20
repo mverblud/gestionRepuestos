@@ -5,6 +5,7 @@ import categoryModel from "../models/categoryModel";
 import carBrandModel from "../models/carBrandModel";
 import providerModel from "../models/providerModel";
 import productModel from "../models/productModel";
+import { LogLevel, logger } from "../helpers/logger";
 
 const uploadCSV = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -109,7 +110,8 @@ const uploadCSV = async (req: Request, res: Response): Promise<void> => {
       results: results.length,
       resultadoMany: resultadoMany.length,
     });
-  } catch (error: any) {
+  } catch (error) {
+    logger("uploadCSV", error, LogLevel.ERROR);
     res.status(500).json({ error: "Ocurrió un error interno." });
   }
 };

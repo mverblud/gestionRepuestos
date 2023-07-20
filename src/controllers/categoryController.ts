@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import mongoose from "mongoose";
+import { isValidObjectId } from "mongoose";
 
 import CategoryModel from "../models/categoryModel";
 import { ICategory } from "../interfaces/category.interface";
@@ -9,6 +9,7 @@ import {
 } from "../schema/categorySchema";
 import cloudinary from "../config/cloudinaryConfig";
 import deleteUploadsFolder from "../helpers/deleteUploadsFolder";
+import { LogLevel, logger } from "../helpers/logger";
 
 const folderCategories = "ov/categories";
 
@@ -32,8 +33,8 @@ const getCategories = async (req: Request, res: Response): Promise<void> => {
       categories,
     });
   } catch (error) {
-    console.error("No se pudo obtener las categorias:", error);
-    res.status(400).json({ msg: "No se pudo obtener las categorias" });
+    logger("getCategories", error, LogLevel.ERROR);
+    res.status(500).json({ error: "Could not get Categories." });
   }
 };
 
@@ -41,7 +42,7 @@ const getCategory = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
     let categories: ICategory[];
-    if (mongoose.isValidObjectId(id)) {
+    if (isValidObjectId(id)) {
       // Si el parámetro es un ID válido, busca la categoría por ID
       const category = await CategoryModel.findById(id);
       categories = category ? [category] : [];
@@ -49,17 +50,17 @@ const getCategory = async (req: Request, res: Response) => {
       // Si el parámetro no es un ID válido, busca la categoría por letras de búsqueda
       categories = await CategoryModel.find({
         name: { $regex: id, $options: "i" },
-      });
+      }).sort({ name: 1 });
     }
     // Si no se encontraron categorías, devuelve un mensaje indicando que no se encontraron resultados
     if (categories.length === 0) {
-      return res.status(404).json({ message: "No se encontraron categorías." });
+      return res.status(404).json({ message: "Could not get categories." });
     }
     // Si se encontraron categorías, envíalas como respuesta
     return res.json(categories);
   } catch (error) {
-    console.error("No se pudo obtener la categoria:", error);
-    return res.status(400).json({ message: "No se pudo obtener la categoria" });
+    logger("getCategory", error, LogLevel.ERROR);
+    return res.status(500).json({ error: "Could not get categories." });
   }
 };
 
@@ -71,9 +72,7 @@ const createCategory = async (req: Request, res: Response) => {
     const { name, enabled } = value;
 
     if (error) {
-      return res
-        .status(400)
-        .json({ message: "El cuerpo de la solicitud no es válido", error });
+      return res.status(400).json({ message: "Invalid request body", error });
     }
 
     //  Verifico si no existe la marca
@@ -82,7 +81,7 @@ const createCategory = async (req: Request, res: Response) => {
       name: nameUpperCase,
     });
     if (existingCategory) {
-      return res.status(409).json({ message: "La categoría ya existe" });
+      return res.status(409).json({ message: "Category already exists." });
     }
 
     let imageUrl: string | undefined;
@@ -111,8 +110,8 @@ const createCategory = async (req: Request, res: Response) => {
     await CategoryModel.create(newCategory);
     return res.status(201).json({ category: newCategory });
   } catch (error) {
-    console.error("Error al crear la categoría:", error);
-    return res.status(400).json({ message: "No se pudo crear la categoria" });
+    logger("createCategory", error, LogLevel.ERROR);
+    return res.status(500).json({ error: "Failed to create the category." });
   }
 };
 
@@ -124,16 +123,14 @@ const updateCategory = async (req: Request, res: Response) => {
     });
 
     if (error) {
-      return res
-        .status(400)
-        .json({ message: "El cuerpo de la solicitud no es válido", error });
+      return res.status(400).json({ message: "Invalid request body", error });
     }
 
     // Obtiene la categoría existente por ID
     const existingCategory: ICategory | null = await CategoryModel.findById(id);
 
     if (!existingCategory) {
-      return res.status(409).json({ message: "La categoría No existe" });
+      return res.status(404).json({ message: "Category not found" });
     }
 
     // Verifica si se proporcionó un nuevo nombre de categoría
@@ -164,8 +161,8 @@ const updateCategory = async (req: Request, res: Response) => {
       await CategoryModel.findByIdAndUpdate(id, { $set: value }, { new: true });
     return res.status(200).json(updatedCategory);
   } catch (error) {
-    console.error("Error al actualizar la categoría:", error);
-    return res.status(400).json({ msg: "No se pudo actualizar la categoria" });
+    logger("updateCategory", error, LogLevel.ERROR);
+    return res.status(500).json({ error: "Error updating the product." });
   }
 };
 
@@ -177,9 +174,9 @@ const deleteCategory = async (req: Request, res: Response) => {
     });
     res.json({ category });
   } catch (error) {
-    console.error("Error al eliminar la categoría:", error);
-    res.status(400).json({
-      msg: "No se pudo borrar la categoria",
+    logger("deleteCategory", error, LogLevel.ERROR);
+    res.status(500).json({
+      error: "Error deleting the product.",
     });
   }
 };

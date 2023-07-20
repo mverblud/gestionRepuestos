@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import mongoose from "mongoose";
+import { isValidObjectId } from "mongoose";
 
 import cloudinary from "../config/cloudinaryConfig";
 import deleteUploadsFolder from "../helpers/deleteUploadsFolder";
@@ -9,6 +9,7 @@ import {
   createProductBrandSchema,
   updateProductBrandSchema,
 } from "../schema/productBrandSchema";
+import { LogLevel, logger } from "../helpers/logger";
 
 const folderProductBrands = "ov/productBrands";
 
@@ -33,8 +34,8 @@ const getProductBrands = async (req: Request, res: Response): Promise<void> => {
       productBrands,
     });
   } catch (error) {
-    console.error("No se pudo obtener las productBrand:", error);
-    res.status(400).json({ msg: "No se pudo obtener las productBrand" });
+    logger("getProductBrands", error, LogLevel.ERROR);
+    res.status(500).json({ error: "Could not get ProductBrands." });
   }
 };
 
@@ -42,7 +43,7 @@ const getProductBrand = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
     let productBrands: IProductBrand[];
-    if (mongoose.isValidObjectId(id)) {
+    if (isValidObjectId(id)) {
       // Si el parámetro es un ID válido, busca la categoría por ID
       const productBrand = await productBrandModel.findById(id);
       productBrands = productBrand ? [productBrand] : [];
@@ -54,17 +55,13 @@ const getProductBrand = async (req: Request, res: Response) => {
     }
     // Si no se encontraron categorías, devuelve un mensaje indicando que no se encontraron resultados
     if (productBrands.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No se encontraron productBrands." });
+      return res.status(404).json({ message: "Could not get productBrands." });
     }
     // Si se encontraron categorías, envíalas como respuesta
     return res.json(productBrands);
   } catch (error) {
-    console.error("No se pudo obtener la ProductBrands:", error);
-    return res
-      .status(400)
-      .json({ message: "No se pudo obtener la productBrands" });
+    logger("getProductBrand", error, LogLevel.ERROR);
+    return res.status(500).json({ error: "Could not get ProductBrands." });
   }
 };
 
@@ -76,9 +73,7 @@ const createProductBrand = async (req: Request, res: Response) => {
     const { name, enabled } = value;
 
     if (error) {
-      return res
-        .status(400)
-        .json({ message: "El cuerpo de la solicitud no es válido", error });
+      return res.status(400).json({ message: "Invalid request body", error });
     }
 
     //  Verifico si no existe la marca
@@ -87,7 +82,7 @@ const createProductBrand = async (req: Request, res: Response) => {
       name: nameUpperCase,
     });
     if (existingProductBrand) {
-      return res.status(409).json({ message: "La ProductBrand ya existe" });
+      return res.status(409).json({ message: "ProductBrand already exists." });
     }
 
     let imageUrl: string | undefined;
@@ -116,10 +111,10 @@ const createProductBrand = async (req: Request, res: Response) => {
     await productBrandModel.create(newProductBrand);
     return res.status(201).json({ ProductBrand: newProductBrand });
   } catch (error) {
-    console.error("Error al crear la categoría:", error);
+    logger("createProductBrand", error, LogLevel.ERROR);
     return res
-      .status(400)
-      .json({ message: "No se pudo crear la ProductBrand" });
+      .status(500)
+      .json({ error: "Failed to create the productBrand." });
   }
 };
 
@@ -131,9 +126,7 @@ const updateProductBrand = async (req: Request, res: Response) => {
     });
 
     if (error) {
-      return res
-        .status(400)
-        .json({ message: "El cuerpo de la solicitud no es válido", error });
+      return res.status(400).json({ message: "Invalid request body", error });
     }
 
     // Obtiene la categoría existente por ID
@@ -141,7 +134,7 @@ const updateProductBrand = async (req: Request, res: Response) => {
       await productBrandModel.findById(id);
 
     if (!existingProductBrand) {
-      return res.status(409).json({ message: "La ProductBrand No existe" });
+      return res.status(409).json({ message: "ProductBrand not found" });
     }
 
     // Verifica si se proporcionó un nuevo nombre de categoría
@@ -175,10 +168,8 @@ const updateProductBrand = async (req: Request, res: Response) => {
       );
     return res.status(200).json(updatedProductBrand);
   } catch (error) {
-    console.error("Error al actualizar la ProductBrand:", error);
-    return res
-      .status(400)
-      .json({ msg: "No se pudo actualizar la ProductBrand" });
+    logger("updateProductBrand", error, LogLevel.ERROR);
+    return res.status(500).json({ error: "Error updating the ProductBrand." });
   }
 };
 
@@ -190,9 +181,9 @@ const deleteProductBrand = async (req: Request, res: Response) => {
     });
     res.json({ category });
   } catch (error) {
-    console.error("Error al eliminar la ProductBrand:", error);
-    res.status(400).json({
-      msg: "No se pudo borrar la ProductBrand",
+    logger("deleteProductBrand", error, LogLevel.ERROR);
+    res.status(500).json({
+      error: "Error deleting the productBrand.",
     });
   }
 };

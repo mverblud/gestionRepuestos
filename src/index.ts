@@ -10,6 +10,7 @@ import productRoute from "./routes/productsRoutes";
 import providerRoute from "./routes/providersRoutes";
 import uploadsRoute from "./routes/uploadsRoutes";
 import connectDb from "./database/config";
+import { LogLevel, logger } from "./helpers/logger";
 
 void (async () => {
   dotenv.config();
@@ -35,7 +36,7 @@ void (async () => {
 
   const PORT = process.env.PORT ?? 8080;
   const server = app.listen(PORT, () => {
-    console.log(`⚡️[server]: Server is running on port ${PORT}`);
+    logger("server", `Server is running on port ${PORT}`, LogLevel.INFO);
   });
   server.on("error", (error) => console.log("Server error", error));
 })();
