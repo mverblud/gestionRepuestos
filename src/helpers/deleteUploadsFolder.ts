@@ -7,10 +7,11 @@ export const deleteUploadsFolder = () => {
 
   if (fs.existsSync(directory)) {
     const files = fs.readdirSync(directory);
-
     files.forEach((file) => {
-      const filePath = `${directory}${file}`;
-      fs.unlinkSync(filePath);
+      if (file !== "CORVEN" && file !== "SADAR") {
+        const filePath = `${directory}${file}`;
+        fs.unlinkSync(filePath);
+      }
     });
   }
 };

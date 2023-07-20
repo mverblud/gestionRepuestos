@@ -8,6 +8,7 @@ import categorieRoute from "./routes/categoryRoutes";
 import productBrandRoute from "./routes/productBrandsRoutes";
 import productRoute from "./routes/productsRoutes";
 import providerRoute from "./routes/providersRoutes";
+import uploadsRoute from "./routes/uploadsRoutes";
 import connectDb from "./database/config";
 
 void (async () => {
@@ -30,6 +31,7 @@ void (async () => {
   app.use(`/${PATH}/product-brands`, productBrandRoute);
   app.use(`/${PATH}/product`, productRoute);
   app.use(`/${PATH}/providers`, providerRoute);
+  app.use(`/${PATH}/uploads`, uploadsRoute);
 
   const PORT = process.env.PORT ?? 8080;
   const server = app.listen(PORT, () => {
