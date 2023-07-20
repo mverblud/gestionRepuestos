@@ -11,7 +11,9 @@
     "lint:fix": "eslint --fix .",
     "db:importar": "node dist/seed/seeder.js -i",
     "db:eliminar": "node dist/seed/seeder.js -e",
-    "db:cloudinary": "node dist/seed/seeder.js -c"
+    "db:clearcloudinary": "node dist/seed/seeder.js -c",
+    "db:uploadcloudinary": "node dist/seed/seeder.js -u",
+    "db:imgupd": "node dist/seed/seeder.js -img"
   },
   "keywords": [],
   "author": "",
@@ -37,6 +39,7 @@
   "dependencies": {
     "cloudinary": "^1.37.3",
     "cors": "^2.8.5",
+    "csv-parser": "^3.0.0",
     "dotenv": "^16.1.4",
     "express": "^4.18.2",
     "express-validator": "^7.0.1",
