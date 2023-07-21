@@ -8,6 +8,7 @@ import categorieRoute from "./routes/categoryRoutes";
 import productBrandRoute from "./routes/productBrandsRoutes";
 import productRoute from "./routes/productsRoutes";
 import providerRoute from "./routes/providersRoutes";
+import searchRoute from "./routes/searchRoutes";
 import uploadsRoute from "./routes/uploadsRoutes";
 import connectDb from "./database/config";
 import { LogLevel, logger } from "./helpers/logger";
@@ -29,6 +30,7 @@ void (async () => {
   const PATH = process.env.PATH_URL ?? "api";
   app.use(`/${PATH}/car-brands`, carBrandRoute);
   app.use(`/${PATH}/categories`, categorieRoute);
+  app.use(`/${PATH}/search`, searchRoute);
   app.use(`/${PATH}/product-brands`, productBrandRoute);
   app.use(`/${PATH}/product`, productRoute);
   app.use(`/${PATH}/providers`, providerRoute);
