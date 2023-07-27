@@ -55,6 +55,7 @@ const deleteData = async (): Promise<void> => {
       carBrandModel.deleteMany(),
       productBrandModel.deleteMany(),
       providerModel.deleteMany(),
+      productModel.deleteMany(),
     ]);
     console.log("Data deleted successfully");
     process.exit(1);
