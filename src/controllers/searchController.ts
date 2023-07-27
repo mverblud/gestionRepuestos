@@ -149,7 +149,7 @@ const searchProducts = async (
       .populate("category", "name")
       .populate("carBrand", "name")
       .populate("productBrand", "name")
-      .populate("provider", "name")
+      .populate("provider", "name nameShort")
       .skip(Number(skip))
       .limit(Number(limit)),
   ]);
