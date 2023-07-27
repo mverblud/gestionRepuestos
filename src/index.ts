@@ -40,5 +40,5 @@ void (async () => {
   const server = app.listen(PORT, () => {
     logger("server", `Server is running on port ${PORT}`, LogLevel.INFO);
   });
-  server.on("error", (error) => console.log("Server error", error));
+  server.on("error", (error) => logger("server", error, LogLevel.ERROR));
 })();
