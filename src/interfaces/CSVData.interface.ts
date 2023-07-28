@@ -9,4 +9,5 @@ export interface ICSVData {
   name: string;
   provider: string;
   providerName?: string;
+  image?: string;
 }
