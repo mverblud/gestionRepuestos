@@ -10,7 +10,17 @@ export const logger = (
   level: LogLevel = LogLevel.LOG
 ): void => {
   const logLevel = level.toUpperCase();
-  const timestamp = new Date().toISOString();
+  const date = new Date();
+  const options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    timeZone: "America/Argentina/Buenos_Aires",
+  };
+  const timestamp = date.toLocaleString("es-AR", options);
   let logMessage: string;
 
   if (typeof message === "string" || message instanceof Error) {

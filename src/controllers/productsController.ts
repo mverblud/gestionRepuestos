@@ -28,7 +28,7 @@ const getProducts = async (req: Request, res: Response): Promise<void> => {
         .populate("productBrand", "name")
         .populate("category", "name")
         .populate("carBrand", "name")
-        .populate("provider", "name")
+        .populate("provider", "name nameShort")
         .skip(Number(offset))
         .limit(Number(limit))
         .sort({ name: 1 }),

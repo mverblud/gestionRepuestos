@@ -2,8 +2,12 @@
 /dist
 /node_modules
 /mongo
+/uploads
 /uploads/CORVEN
 /uploads/SADAR
+SADAR*
+CORVEN*
+productsError*
 
 .env
 .env.prod

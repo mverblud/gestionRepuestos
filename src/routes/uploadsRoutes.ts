@@ -1,6 +1,6 @@
 import express from "express";
 import upload from "../config/uploadConfig";
-import { uploadCSV } from "../controllers/uploadsController";
+import { updatePrice, uploadCSV } from "../controllers/uploadsController";
 
 const router = express.Router();
 
@@ -13,5 +13,7 @@ router.post(
   ],
   uploadCSV
 );
+
+router.post("/update-prices/:id", [upload.single("file")], updatePrice);
 
 export default router;

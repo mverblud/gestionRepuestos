@@ -162,6 +162,11 @@ const productBrands: IProductBrand[] = [
     enabled: true,
   },
   {
+    name: "PINTARELLI",
+    status: true,
+    enabled: true,
+  },
+  {
     name: "POWER",
     status: true,
     enabled: true,
@@ -208,6 +213,46 @@ const productBrands: IProductBrand[] = [
   },
   {
     name: "ZNL",
+    status: true,
+    enabled: true,
+  },
+  {
+    name: "IMPORTADO",
+    status: true,
+    enabled: true,
+  },
+  {
+    name: "NACIONAL",
+    status: true,
+    enabled: true,
+  },
+  {
+    name: "PRUYER PARTS",
+    status: true,
+    enabled: true,
+  },
+  {
+    name: "LUGA",
+    status: true,
+    enabled: true,
+  },
+  {
+    name: "ML",
+    status: true,
+    enabled: true,
+  },
+  {
+    name: "DAUER",
+    status: true,
+    enabled: true,
+  },
+  {
+    name: "GAMBINA",
+    status: true,
+    enabled: true,
+  },
+  {
+    name: "IR ARGENTINA",
     status: true,
     enabled: true,
   },
