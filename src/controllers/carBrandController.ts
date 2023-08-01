@@ -80,10 +80,11 @@ const createCarBrand = async (req: Request, res: Response) => {
 
     //  Verifico si no existe la marca
     const nameUpperCase = name.toUpperCase();
-    const existingCarBrand = await carBrandModel.findOne({
-      name: nameUpperCase,
-    });
-    if (existingCarBrand) {
+    if (
+      await carBrandModel.exists({
+        name: nameUpperCase,
+      })
+    ) {
       return res.status(409).json({ message: "Carbrand already exists." });
     }
 
@@ -92,10 +93,9 @@ const createCarBrand = async (req: Request, res: Response) => {
     // Verifica si se proporcionó un archivo de imagen en la solicitud
     if (req.file) {
       // Sube la imagen a Cloudinary
-      const nameToUpperCase: string = name.toUpperCase();
       const result = await cloudinary.uploader.upload(req.file.path, {
         folder: folderCarBrands,
-        public_id: nameToUpperCase,
+        public_id: nameUpperCase,
       });
       imageUrl = result.secure_url;
 
@@ -127,6 +127,11 @@ const updateCarBrand = async (req: Request, res: Response) => {
 
     if (error) {
       return res.status(400).json({ message: "Invalid request body", error });
+    }
+
+    // Verificar si id es un ObjectId válido
+    if (!isValidObjectId(id)) {
+      return res.status(409).json({ message: "The id is invalid" });
     }
 
     // Obtiene la categoría existente por ID
@@ -170,9 +175,10 @@ const updateCarBrand = async (req: Request, res: Response) => {
 const deleteCarBrand = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const category = await carBrandModel.findByIdAndUpdate(id, {
-      status: false,
-    });
+    const category = await carBrandModel.updateOne(
+      { _id: id },
+      { status: false }
+    );
     res.json({ category });
   } catch (error) {
     logger("deleteCarBrand", error, LogLevel.ERROR);
