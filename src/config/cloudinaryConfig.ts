@@ -1,9 +1,9 @@
 import { v2 as cloudinary } from "cloudinary";
 
 cloudinary.config({
-  cloud_name: "dxwi6ybxk",
-  api_key: "879748147574898",
-  api_secret: "mn8KhZh9GyBG0JSgvuzJXWcDpSE",
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 export default cloudinary;
