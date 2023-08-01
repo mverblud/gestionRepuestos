@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { isValidObjectId } from "mongoose";
 
-import CategoryModel from "../models/categoryModel";
 import { ICategory } from "../interfaces/category.interface";
 import {
   createCategorySchema,
@@ -10,6 +9,7 @@ import {
 import cloudinary from "../config/cloudinaryConfig";
 import deleteUploadsFolder from "../helpers/deleteUploadsFolder";
 import { LogLevel, logger } from "../helpers/logger";
+import categoryModel from "../models/categoryModel";
 
 const folderCategories = "ov/categories";
 
@@ -19,8 +19,9 @@ const getCategories = async (req: Request, res: Response): Promise<void> => {
     const query = { status: true };
 
     const [total, categories] = await Promise.all([
-      CategoryModel.countDocuments(query),
-      CategoryModel.find(query)
+      categoryModel.countDocuments(query),
+      categoryModel
+        .find(query)
         .skip(Number(offset))
         .limit(Number(limit))
         .sort({ name: 1 }),
@@ -44,13 +45,15 @@ const getCategory = async (req: Request, res: Response) => {
     let categories: ICategory[];
     if (isValidObjectId(id)) {
       // Si el parámetro es un ID válido, busca la categoría por ID
-      const category = await CategoryModel.findById(id);
+      const category = await categoryModel.findById(id);
       categories = category ? [category] : [];
     } else {
       // Si el parámetro no es un ID válido, busca la categoría por letras de búsqueda
-      categories = await CategoryModel.find({
-        name: { $regex: id, $options: "i" },
-      }).sort({ name: 1 });
+      categories = await categoryModel
+        .find({
+          name: { $regex: id, $options: "i" },
+        })
+        .sort({ name: 1 });
     }
     // Si no se encontraron categorías, devuelve un mensaje indicando que no se encontraron resultados
     if (categories.length === 0) {
@@ -77,10 +80,11 @@ const createCategory = async (req: Request, res: Response) => {
 
     //  Verifico si no existe la marca
     const nameUpperCase = name.toUpperCase();
-    const existingCategory = await CategoryModel.findOne({
-      name: nameUpperCase,
-    });
-    if (existingCategory) {
+    if (
+      await categoryModel.exists({
+        name: nameUpperCase,
+      })
+    ) {
       return res.status(409).json({ message: "Category already exists." });
     }
 
@@ -89,10 +93,9 @@ const createCategory = async (req: Request, res: Response) => {
     // Verifica si se proporcionó un archivo de imagen en la solicitud
     if (req.file) {
       // Sube la imagen a Cloudinary
-      const nameToUpperCase: string = name.toUpperCase();
       const result = await cloudinary.uploader.upload(req.file.path, {
         folder: folderCategories,
-        public_id: nameToUpperCase,
+        public_id: nameUpperCase,
       });
       imageUrl = result.secure_url;
 
@@ -107,7 +110,7 @@ const createCategory = async (req: Request, res: Response) => {
       image: imageUrl,
     };
 
-    await CategoryModel.create(newCategory);
+    await categoryModel.create(newCategory);
     return res.status(201).json({ category: newCategory });
   } catch (error) {
     logger("createCategory", error, LogLevel.ERROR);
@@ -126,8 +129,13 @@ const updateCategory = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Invalid request body", error });
     }
 
+    // Verificar si id es un ObjectId válido
+    if (!isValidObjectId(id)) {
+      return res.status(409).json({ message: "The id is invalid" });
+    }
+
     // Obtiene la categoría existente por ID
-    const existingCategory: ICategory | null = await CategoryModel.findById(id);
+    const existingCategory: ICategory | null = await categoryModel.findById(id);
 
     if (!existingCategory) {
       return res.status(404).json({ message: "Category not found" });
@@ -158,7 +166,7 @@ const updateCategory = async (req: Request, res: Response) => {
     }
 
     const updatedCategory: ICategory | null =
-      await CategoryModel.findByIdAndUpdate(id, { $set: value }, { new: true });
+      await categoryModel.findByIdAndUpdate(id, { $set: value }, { new: true });
     return res.status(200).json(updatedCategory);
   } catch (error) {
     logger("updateCategory", error, LogLevel.ERROR);
@@ -169,9 +177,10 @@ const updateCategory = async (req: Request, res: Response) => {
 const deleteCategory = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const category = await CategoryModel.findByIdAndUpdate(id, {
-      status: false,
-    });
+    const category = await categoryModel.updateOne(
+      { _id: id },
+      { status: false }
+    );
     res.json({ category });
   } catch (error) {
     logger("deleteCategory", error, LogLevel.ERROR);
