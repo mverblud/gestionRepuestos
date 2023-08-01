@@ -10,6 +10,8 @@ import upload from "../config/uploadConfig";
 import { check } from "express-validator";
 import validateFields from "../middlewares/validateFields";
 import { existsCarBrand } from "../helpers/db-validators";
+import validateJWT from "../middlewares/validateJWT";
+import isAdminRole from "../middlewares/isAdminRole";
 
 const router = express.Router();
 
@@ -18,33 +20,21 @@ router.get("/:id", getCarBrand);
 
 router.post(
   "/",
-  [
-    //validarJWT,
-    //esAdminRole,
-    upload.single("image"),
-  ],
+  [validateJWT, isAdminRole, upload.single("image")],
   createCarBrand
 );
 
 router.put(
   "/:id",
-  [
-    //validarJWT,
-    //esAdminRole,
-    //check("name", "El nombre es obligatorio").not().isEmpty(),
-    check("id", "No es un un ID válido").isMongoId(),
-    //check("id").custom(existsCategory),
-    upload.single("image"),
-    validateFields,
-  ],
+  [validateJWT, isAdminRole, upload.single("image")],
   updateCarBrand
 );
 
 router.delete(
   "/:id",
   [
-    //  validarJWT,
-    //  esAdminRole,
+    validateJWT,
+    isAdminRole,
     check("id", "No es un un ID válido").isMongoId(),
     check("id").custom(existsCarBrand),
     validateFields,
