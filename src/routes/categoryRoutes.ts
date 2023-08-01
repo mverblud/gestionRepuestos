@@ -10,42 +10,31 @@ import {
 import validateFields from "../middlewares/validateFields";
 import upload from "../config/uploadConfig";
 import { existsCategory } from "../helpers/db-validators";
+import validateJWT from "../middlewares/validateJWT";
+import isAdminRole from "../middlewares/isAdminRole";
 
 const router = express.Router();
 
 router.get("/", getCategories);
-
 router.get("/:id", getCategory);
 
 router.post(
   "/",
-  [
-    //validarJWT,
-    //esAdminRole,
-    upload.single("image"),
-  ],
+  [validateJWT, isAdminRole, upload.single("image")],
   createCategory
 );
 
 router.put(
   "/:id",
-  [
-    //validarJWT,
-    //esAdminRole,
-    //check("name", "El nombre es obligatorio").not().isEmpty(),
-    check("id", "No es un un ID válido").isMongoId(),
-    //check("id").custom(existsCategory),
-    upload.single("image"),
-    validateFields,
-  ],
+  [validateJWT, isAdminRole, upload.single("image")],
   updateCategory
 );
 
 router.delete(
   "/:id",
   [
-    //  validarJWT,
-    //  esAdminRole,
+    validateJWT,
+    isAdminRole,
     check("id", "No es un un ID válido").isMongoId(),
     check("id").custom(existsCategory),
     validateFields,
