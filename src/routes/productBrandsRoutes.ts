@@ -10,6 +10,8 @@ import {
   updateProductBrand,
 } from "../controllers/productBrandsController";
 import { existsProductBrand } from "../helpers/db-validators";
+import validateJWT from "../middlewares/validateJWT";
+import isAdminRole from "../middlewares/isAdminRole";
 
 const router = express.Router();
 
@@ -18,33 +20,21 @@ router.get("/:id", getProductBrand);
 
 router.post(
   "/",
-  [
-    //validarJWT,
-    //esAdminRole,
-    upload.single("image"),
-  ],
+  [validateJWT, isAdminRole, upload.single("image")],
   createProductBrand
 );
 
 router.put(
   "/:id",
-  [
-    //validarJWT,
-    //esAdminRole,
-    //check("name", "El nombre es obligatorio").not().isEmpty(),
-    check("id", "No es un un ID válido").isMongoId(),
-    //check("id").custom(existsCategory),
-    upload.single("image"),
-    validateFields,
-  ],
+  [validateJWT, isAdminRole, upload.single("image")],
   updateProductBrand
 );
 
 router.delete(
   "/:id",
   [
-    //  validarJWT,
-    //  esAdminRole,
+    validateJWT,
+    isAdminRole,
     check("id", "No es un un ID válido").isMongoId(),
     check("id").custom(existsProductBrand),
     validateFields,
