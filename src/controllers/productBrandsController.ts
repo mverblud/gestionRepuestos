@@ -129,6 +129,11 @@ const updateProductBrand = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Invalid request body", error });
     }
 
+    // Verificar si id es un ObjectId válido
+    if (!isValidObjectId(id)) {
+      return res.status(409).json({ message: "The id is invalid" });
+    }
+
     // Obtiene la categoría existente por ID
     const existingProductBrand: IProductBrand | null =
       await productBrandModel.findById(id);
@@ -176,9 +181,10 @@ const updateProductBrand = async (req: Request, res: Response) => {
 const deleteProductBrand = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const category = await productBrandModel.findByIdAndUpdate(id, {
-      status: false,
-    });
+    const category = await productBrandModel.updateOne(
+      { _id: id },
+      { status: false }
+    );
     res.json({ category });
   } catch (error) {
     logger("deleteProductBrand", error, LogLevel.ERROR);
