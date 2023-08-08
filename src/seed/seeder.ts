@@ -12,6 +12,8 @@ import providers from "./providers";
 import path from "path";
 import productModel from "../models/productModel";
 import carBrands from "./carBrands";
+import userModel from "../models/userModel";
+import users from "./user";
 
 dotenv.config();
 
@@ -37,6 +39,7 @@ const importData = async (): Promise<void> => {
       carBrandModel.insertMany(carBrands),
       productBrandModel.insertMany(productBrand),
       providerModel.insertMany(providers),
+      userModel.insertMany(users),
     ]);
     console.log("Data imported successfully");
     process.exit(1);
@@ -56,6 +59,7 @@ const deleteData = async (): Promise<void> => {
       productBrandModel.deleteMany(),
       providerModel.deleteMany(),
       productModel.deleteMany(),
+      userModel.deleteMany(),
     ]);
     console.log("Data deleted successfully");
     process.exit(1);

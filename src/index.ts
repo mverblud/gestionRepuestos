@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import morgan from "morgan";
 
+import authRoute from "./routes/authRoutes";
 import carBrandRoute from "./routes/carBrandsRoutes";
 import categorieRoute from "./routes/categoryRoutes";
 import productBrandRoute from "./routes/productBrandsRoutes";
@@ -28,6 +29,7 @@ void (async () => {
   app.use(express.urlencoded({ extended: true }));
 
   const PATH = process.env.PATH_URL ?? "api";
+  app.use(`/${PATH}/auth`, authRoute);
   app.use(`/${PATH}/car-brands`, carBrandRoute);
   app.use(`/${PATH}/categories`, categorieRoute);
   app.use(`/${PATH}/search`, searchRoute);
