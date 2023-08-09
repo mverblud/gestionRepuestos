@@ -11,6 +11,7 @@ import productRoute from "./routes/productsRoutes";
 import providerRoute from "./routes/providersRoutes";
 import searchRoute from "./routes/searchRoutes";
 import uploadsRoute from "./routes/uploadsRoutes";
+import updateInfoRoute from "./routes/updateInfoRoutes";
 import connectDb from "./database/config";
 import { LogLevel, logger } from "./helpers/logger";
 
@@ -32,10 +33,11 @@ void (async () => {
   app.use(`/${PATH}/auth`, authRoute);
   app.use(`/${PATH}/car-brands`, carBrandRoute);
   app.use(`/${PATH}/categories`, categorieRoute);
-  app.use(`/${PATH}/search`, searchRoute);
   app.use(`/${PATH}/product-brands`, productBrandRoute);
   app.use(`/${PATH}/product`, productRoute);
   app.use(`/${PATH}/providers`, providerRoute);
+  app.use(`/${PATH}/search`, searchRoute);
+  app.use(`/${PATH}/update-info`, updateInfoRoute);
   app.use(`/${PATH}/uploads`, uploadsRoute);
 
   const PORT = process.env.PORT ?? 8080;

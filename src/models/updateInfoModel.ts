@@ -13,7 +13,10 @@ const updateInfoSchema = new Schema<IUpdateInfo>(
       type: Schema.Types.ObjectId,
       ref: "Provider",
     },
-    user: { type: String, default: "" },
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
   },
   { timestamps: true }
 );

@@ -4,5 +4,5 @@ export interface IUpdateInfo {
   fileName: string;
   productCount: number;
   provider: Types.ObjectId;
-  user: string;
+  user: Types.ObjectId;
 }

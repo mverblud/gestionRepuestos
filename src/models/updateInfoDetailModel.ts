@@ -5,11 +5,11 @@ const updateInfoDetailSchema = new Schema<IUpdateInfoDetail>(
   {
     updateInfo: {
       type: Schema.Types.ObjectId,
-      ref: "Provider",
+      ref: "UpdateInfo",
     },
     product: {
       type: Schema.Types.ObjectId,
-      ref: "Provider",
+      ref: "Product",
     },
     previousPrice: { type: Number, default: 0 },
     newPrice: { type: Number, default: 0 },
