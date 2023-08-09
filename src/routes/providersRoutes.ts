@@ -9,26 +9,21 @@ import {
   updateProvider,
 } from "../controllers/providerController";
 import { existsProvider } from "../helpers/db-validators";
+import validateJWT from "../middlewares/validateJWT";
+import isAdminRole from "../middlewares/isAdminRole";
 
 const router = express.Router();
 
 router.get("/", getProviders);
 router.get("/:id", getProvider);
 
-router.post(
-  "/",
-  [
-    //validarJWT,
-    //esAdminRole,
-  ],
-  createProvider
-);
+router.post("/", [validateJWT, isAdminRole], createProvider);
 
 router.put(
   "/:id",
   [
-    //validarJWT,
-    //esAdminRole,
+    validateJWT,
+    isAdminRole,
     check("id", "No es un un ID válido").isMongoId(),
     check("id").custom(existsProvider),
     validateFields,
@@ -39,8 +34,8 @@ router.put(
 router.delete(
   "/:id",
   [
-    //  validarJWT,
-    //  esAdminRole,
+    validateJWT,
+    isAdminRole,
     check("id", "No es un un ID válido").isMongoId(),
     check("id").custom(existsProvider),
     validateFields,
