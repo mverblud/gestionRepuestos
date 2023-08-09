@@ -11,6 +11,7 @@ import updateInfoModel from "../models/updateInfoModel";
 import updateInfoDetailModel from "../models/updateInfoDetailModel";
 import { isNumeric } from "../helpers/isNumeric";
 import { roundToDecimal } from "../helpers/roundToDecimal";
+import { AuthenticatedRequestUser } from "../interfaces/authenticated.interface";
 
 const uploadCSV = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -124,9 +125,10 @@ const uploadCSV = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-const updatePrice = async (req: Request, res: Response) => {
+const updatePrice = async (req: AuthenticatedRequestUser, res: Response) => {
   try {
     const { id } = req.params;
+    const userId = req.user?._id;
     const headersString = req.body.headers; // Recibir los headers como una cadena de texto
     const headers = headersString.split(","); // Convertir la cadena en un array
 
@@ -231,7 +233,7 @@ const updatePrice = async (req: Request, res: Response) => {
         fileName: originalname,
         productCount: productsInfo.length,
         provider: id,
-        user: ",?????",
+        user: userId,
       });
 
       // Crear un array con los documentos a insertar en updateInfoDetailModel
