@@ -184,7 +184,7 @@ const updatePrice = async (req: AuthenticatedRequestUser, res: Response) => {
       const newPriceIVA = roundToDecimal(newPrice * 1.21, 2);
 
       const productsCursor = await productModel.find(
-        { code },
+        { code , provider: id},
         "price priceIVA"
       );
       if (productsCursor.length === 0) {

@@ -16,6 +16,13 @@ const providers: IProvider[] = [
     phoneNumber: "3515645850",
     emailAddress: "marcosverblud@gmail.com",
   },
+  {
+    name: "Autopartes Juniors",
+    nameShort: "JR",
+    address: "Juan José Paso N° 1443 B° Juniors - Córdoba, Argentina",
+    phoneNumber: "4519227",
+    emailAddress: "info@autopartesjuniors.com.ar",
+  },
 ];
 
 export default providers;

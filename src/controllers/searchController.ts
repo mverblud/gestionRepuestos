@@ -151,7 +151,8 @@ const searchProducts = async (
       .populate("productBrand", "name")
       .populate("provider", "name nameShort")
       .skip(Number(skip))
-      .limit(Number(limit)),
+      .limit(Number(limit))
+      .sort({ image: 1 }),
   ]);
 
   res.json({
