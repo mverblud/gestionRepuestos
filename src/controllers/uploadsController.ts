@@ -16,9 +16,7 @@ import { AuthenticatedRequestUser } from "../interfaces/authenticated.interface"
 const uploadCSV = async (req: Request, res: Response): Promise<void> => {
   try {
     if (!req.file) {
-      res
-        .status(400)
-        .json({ error: "The 'code' and 'price' headers are required." });
+      res.status(400).json({ error: "The file is required." });
       return;
     }
 
@@ -184,7 +182,7 @@ const updatePrice = async (req: AuthenticatedRequestUser, res: Response) => {
       const newPriceIVA = roundToDecimal(newPrice * 1.21, 2);
 
       const productsCursor = await productModel.find(
-        { code , provider: id},
+        { code, provider: id },
         "price priceIVA"
       );
       if (productsCursor.length === 0) {
@@ -202,10 +200,10 @@ const updatePrice = async (req: AuthenticatedRequestUser, res: Response) => {
         const pricePercentageIncrease =
           formattedPreviousPrice !== 0
             ? roundToDecimal(
-                ((newPrice - formattedPreviousPrice) / formattedPreviousPrice) *
-                  100,
-                2
-              )
+              ((newPrice - formattedPreviousPrice) / formattedPreviousPrice) *
+              100,
+              2
+            )
             : -100;
 
         const productInfo = {

@@ -13,10 +13,10 @@ import path from "path";
 import productModel from "../models/productModel";
 import carBrands from "./carBrands";
 import userModel from "../models/userModel";
-import users from "./user";
+import updateInfoDetailModel from "../models/updateInfoDetailModel";
+import updateInfoModel from "../models/updateInfoModel";
 
 dotenv.config();
-
 interface UploadedImage {
   public_id: string;
   url: string;
@@ -35,11 +35,10 @@ const importData = async (): Promise<void> => {
     // conexion a la BD
     await connectDb();
     await Promise.all([
-      categoryModel.insertMany(categories),
       carBrandModel.insertMany(carBrands),
+      categoryModel.insertMany(categories),
       productBrandModel.insertMany(productBrand),
       providerModel.insertMany(providers),
-      userModel.insertMany(users),
     ]);
     console.log("Data imported successfully");
     process.exit(1);
@@ -54,11 +53,13 @@ const deleteData = async (): Promise<void> => {
     // conexion a la BD
     await connectDb();
     await Promise.all([
-      categoryModel.deleteMany(),
       carBrandModel.deleteMany(),
+      categoryModel.deleteMany(),
       productBrandModel.deleteMany(),
-      providerModel.deleteMany(),
       productModel.deleteMany(),
+      providerModel.deleteMany(),
+      updateInfoDetailModel.deleteMany(),
+      updateInfoModel.deleteMany(),
       userModel.deleteMany(),
     ]);
     console.log("Data deleted successfully");
@@ -84,6 +85,7 @@ const deleteAllCloudinary = async (): Promise<void> => {
   }
 };
 
+// Proceso para subir las imagenes a cloudinary
 const uploadImagesToCloudinary = async (
   folderPath: string,
   tags: string
@@ -174,7 +176,7 @@ const obtenerCodigos = async (
       category: categoryDB._id,
     });
 
-    console.log(products.length);
+    console.log("Productos", products.length);
     const jsonContentProduct = JSON.stringify(products);
 
     fs.writeFile(
@@ -217,20 +219,24 @@ const obtenerRecursosCloudinary = async (
 
   let nextPageToken = null;
   do {
-    const { resources: currentResources, next_cursor } =
-      await cloudinary.api.resources({
-        type: "upload",
-        resource_type: "image",
-        prefix,
-        tags,
-        format: "jpg",
-        max_results: 500,
-        next_cursor: nextPageToken,
-      });
+    try {
+      const { resources: currentResources, next_cursor } =
+        await cloudinary.api.resources({
+          type: "upload",
+          resource_type: "image",
+          prefix,
+          tags,
+          format: "jpg",
+          max_results: 500,
+          next_cursor: nextPageToken,
+        });
 
-    resources.push(...currentResources);
-    apiCallsCounter++; // Incrementar el contador de llamadas a la API
-    nextPageToken = next_cursor;
+      resources.push(...currentResources);
+      apiCallsCounter++; // Incrementar el contador de llamadas a la API
+      nextPageToken = next_cursor;
+    } catch (error) {
+      console.log("Explote", error);
+    }
   } while (nextPageToken);
 
   return resources;
@@ -245,6 +251,8 @@ const buscarCoincidencias = async (
   try {
     await connectDb();
     const codes = await obtenerCodigos(productBrandName, categoryName);
+    console.log("Todo Oks", codes.length);
+
     const resources = await obtenerRecursosCloudinary(prefix, tags);
     //const resourcesContent = fs.readFileSync("resources.json", "utf8");
     //const resources: CloudinaryResource[] = JSON.parse(resourcesContent);
@@ -395,7 +403,7 @@ if (process.argv[2] === "-u") {
 
 if (process.argv[2] === "-img") {
   buscarCoincidencias("SADAR", "AMORTIGUADOR", "ov/products/SDR", "SADAR");
-  buscarCoincidencias("CORVEN", "AMORTIGUADOR", "ov/products", "CORVEN");
+  //buscarCoincidencias("CORVEN", "AMORTIGUADOR", "ov/products", "CORVEN");
   //obtenerCodigos("SADAR", "AMORTIGUADOR");
   //obtenerCodigos("CORVEN", "AMORTIGUADOR");
 }
