@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  gestionrepuestos:
+    depends_on:
+      - db
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    image: gestionrepuestos-docker
+    container_name: gestionrepuestos
+    restart: always # reiniciar el contenedor si se detiene
+    ports:
+      - "${PORT}:${PORT}"
+    # working_dir: /var/www/pokedex
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      PORT: ${PORT}
+      PATH_URL: ${PATH_URL}
+      SECRETORPRIVATEKEY: ${SECRETORPRIVATEKEY}
+      MONGO_URI: ${MONGO_URI}
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
+    # volumes:
+    #   - ./:/var/www/pokedex
+
+  db:
+    image: mongo:latest
+    container_name: mongo-ov-docker
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGODB_DATABASE: ov-db-container
+    volumes:
+      - ./mongo:/data/db

@@ -22,13 +22,27 @@ npm run db:importar
 ```
 npm run db:eliminar
 ```
-8. Insertar products a travez de /api/uploads enviando como parametro el archivo:
+8. Insertar products a travez de /api/uploads enviando como parametro el archivo: (Google Drive)
 ```
-products.csv
+Lista de Productos.csv
 ```
 9. Insertar precios a travez de /api/uploads/update-prices/:id enviando como parametro
+
 ### Stack usado
 * Typescript
 * Mongo DB
 * Express
 * Mongose
+
+## Build
+
+```
+docker-compose -f docker-compose.prod.yaml --env-file .env.prod up --build
+```
+
+## Run
+```
+docker-compose -f docker-compose.prod.yaml --env-file .env.prod up
+```
+
+

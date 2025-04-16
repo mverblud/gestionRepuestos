@@ -3,10 +3,11 @@ version: '3'
 services:
   db:
     image: mongo:latest
+    container_name: mongo-ov-docker
     restart: always
     ports:
       - 27017:27017
     environment:
-      MONGODB_DATABASE: ov-db
+      MONGODB_DATABASE: ov-db-container
     volumes:
       - ./mongo:/data/db

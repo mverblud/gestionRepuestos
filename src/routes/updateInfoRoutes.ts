@@ -9,7 +9,7 @@ import isAdminRole from "../middlewares/isAdminRole";
 
 const router = express.Router();
 
-router.get("/", [validateJWT, isAdminRole], getAllUpdateInfo);
+router.get("/", getAllUpdateInfo);
 router.get("/:id", [validateJWT, isAdminRole], getUpdateInfo);
 router.get("/detail/:id", [validateJWT, isAdminRole], getUpdateInfoDetail);
 

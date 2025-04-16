@@ -9,7 +9,7 @@ const readCSVFile = (filePath: string): Promise<ICSVData[]> => {
     fs.createReadStream(filePath)
       .pipe(
         csv({
-          separator: ";",
+          separator: ",",
           newline: "\n",
           headers: [
             "code",

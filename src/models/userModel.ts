@@ -28,7 +28,7 @@ const userSchema = new Schema<IUserDocument>(
       type: String,
       required: true,
       enum: ["ADMIN_ROLE", "USER_ROLE"],
-      default: "USER_ROLE",
+      default: "ADMIN_ROLE",
     },
     phone: {
       type: String,
